@@ -1,130 +1,99 @@
-# 🗄️ OLAP System with SQLite + Pandas
+# 🧩 Full Data Extraction from a Realistic Sales Dataset  
 
-## 📌 Project Description
+This project demonstrates **data extraction techniques** using Python to generate and process realistic sales data. It showcases both **Full** and **Incremental Data Extraction** — two key concepts in data engineering and warehousing.
 
-This project demonstrates the design and implementation of a **mini OLAP (Online Analytical Processing) system** using **SQLite, Pandas, and Seaborn/Matplotlib**.
-It covers **ROLAP, MOLAP, and HOLAP architectures**, along with key **OLAP operations**: Slice, Dice, Roll-Up, and Drill-Down.
-The project also provides visualizations to showcase insights from multidimensional data analysis.
+## 🔍 Overview
 
----
+The script simulates **60 days of sales transactions** across multiple major retailers, then applies two data extraction approaches:
 
-## 🛠️ Schema Design (Star Schema)
+* **Full Extraction** → Loads the entire dataset from the source
+* **Incremental Extraction** → Retrieves only new or updated records after a specified date
 
-The database follows a **Star Schema** with **dimension tables** and a **fact table**.
+This setup mimics real-world ETL workflows, where efficiency and freshness of data are essential.
 
-### **1. Dimension Tables**
+## ⚙️ Features
 
-#### `products`
+* Generates realistic, timestamped sales data
+* Simulates multiple customer transactions across various retailers
+* Demonstrates **Full vs Incremental Extraction** patterns
+* Exports the dataset to CSV format for persistence
+* Leverages **Pandas** for data manipulation and filtering
 
-| Column     | Type         | Description                                     |
-| ---------- | ------------ | ----------------------------------------------- |
-| product_id | INTEGER (PK) | Unique identifier for each product              |
-| category   | TEXT         | Product category (Electronics, Furniture, etc.) |
-| name       | TEXT         | Product name                                    |
-| price      | DECIMAL      | Unit price of product                           |
+## 🧾 Data Structure
 
-#### `dates`
+Each generated record contains the following columns:
 
-| Column     | Type      | Description           |
-| ---------- | --------- | --------------------- |
-| date       | DATE (PK) | Transaction date      |
-| year       | INTEGER   | Year of sale          |
-| quarter    | INTEGER   | Quarter of year (1–4) |
-| month      | INTEGER   | Month number          |
-| month_name | TEXT      | Month name            |
+| Column         | Description                                                     |
+| -------------- | --------------------------------------------------------------- |
+| `id`           | Unique transaction identifier                                   |
+| `customers`    | Retailer name (Amazon, Walmart, Target, Best Buy, Costco, eBay) |
+| `date`         | Transaction date                                                |
+| `amount`       | Sales amount (range: 100–2000)                                  |
+| `last_updated` | Timestamp of the latest record update                           |
 
----
+## 🧩 Installation Requirements
 
-### **2. Fact Table**
+Install dependencies before running the script:
 
-#### `sales`
+```bash
+pip install pandas numpy matplotlib seaborn
+```
 
-| Column     | Type         | Description                         |
-| ---------- | ------------ | ----------------------------------- |
-| sale_id    | INTEGER (PK) | Unique identifier for each sale     |
-| date       | DATE (FK)    | Transaction date (links to `dates`) |
-| product_id | INTEGER (FK) | Product sold (links to `products`)  |
-| quantity   | INTEGER      | Quantity sold                       |
-| revenue    | DECIMAL      | Total revenue (quantity × price)    |
+## 🚀 Usage
 
----
-
-## 🔍 OLAP Architectures Implemented
-
-### **1. ROLAP (Relational OLAP)**
-
-ROLAP queries are executed directly on the **SQLite database** using SQL.
-Examples:
-
-* **Average Revenue by Product Category**
-* **Total Sales by Year**
-* **Best-Selling Products in Each Category**
-
----
-
-### **2. MOLAP (Multidimensional OLAP)**
-
-MOLAP is implemented by building **data cubes in Pandas** after fetching data.
-Examples:
-
-* **Revenue Cube (Category × Year)**
-* **Quantity Cube (Category × Year)**
-  These cubes allow fast aggregation across multiple dimensions.
-
----
-
-### **3. HOLAP (Hybrid OLAP)**
-
-HOLAP combines SQL queries (ROLAP) with Pandas cubes (MOLAP).
-Steps:
-
-1. **SQL (ROLAP):** Fetch detailed data (e.g., sales in 2024).
-2. **Pandas (MOLAP):** Build a cube summarizing **Revenue by Category × Month**.
-
----
-
-## 🔄 OLAP Operations
-
-1. **Slice**
-
-   * Fix one dimension (e.g., sales in `2023` only).
-
-2. **Dice**
-
-   * Apply multiple filters (e.g., sales in `2023` AND category = Electronics).
-
-3. **Roll-Up**
-
-   * Aggregate from detailed → summarized (e.g., product → category → year).
-
-4. **Drill-Down**
-
-   * Break down summarized data into finer detail (e.g., Year → Quarter → Month).
-
----
-
-## 📊 Visualizations
-
-* **Bar Plot** → Average revenue by product category
-* **Heatmap** → Revenue cube (Category × Year)
-* **Line Plot** → Total revenue trends by year
-
----
-
-## 🚀 How to Run
-
-1. Clone this repository:
+1. Run the script:
 
    ```bash
-   git clone https://github.com/your-username/DSA2040A_OLAP_Assignment.git
+   python sales_data_extraction.py
    ```
-2. Install dependencies:
 
-   ```bash
-   pip install pandas numpy matplotlib seaborn sqlite3
-   ```
-3. Run the Jupyter Notebook or Python script:
+2. The program will:
 
-   ```bash
-   python olap_system.py
-   ```
+   * Generate **60 days** of synthetic sales data starting from **April 1, 2025**
+   * Create **3–6 transactions** per day
+   * Save the dataset to **sales data.csv**
+   * Display both **Full Extraction** and **Incremental Extraction (after April 15, 2025)** samples
+
+## 🧠 Code Components
+
+### 🔸 Data Generation
+
+* Simulates daily transactions for 60 consecutive days
+* Randomizes timestamps within each day
+* Generates realistic sales amounts and IDs
+
+### 🔸 Data Extraction Methods
+
+* **Full Extraction** → Loads the entire dataset from CSV
+* **Incremental Extraction** → Filters records where `last_updated` > `last_extraction_date`
+
+## 📊 Output
+
+* **Generated File:** `sales data.csv`
+* **Console Output:** Displays sample rows from both extraction methods for quick verification.
+
+## 🛠️ Customization
+
+You can tweak these parameters for different scenarios:
+
+| Variable                    | Description                       |
+| --------------------------- | --------------------------------- |
+| `customers`                 | List of retailer names            |
+| `start_date`                | Starting date for data generation |
+| `range(60)`                 | Number of days to simulate        |
+| `random.randint(3, 6)`      | Range of transactions per day     |
+| `random.randint(100, 2000)` | Range of sales amounts            |
+
+## 💡 Use Cases
+
+This project is ideal for:
+
+* Practicing **data extraction** and **ETL** concepts
+* Testing **incremental data loading** strategies
+* Creating **synthetic datasets** for analysis or demo pipelines
+* Building foundational knowledge for **Data Warehousing & Mining**
+
+## ⚠️ Note
+
+This project is purely **educational**.
+All generated data is **synthetic** and uses **future dates** for demonstration purposes only.
